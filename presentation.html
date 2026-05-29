@@ -45,6 +45,41 @@
 			}
 			.reveal .slides section {
 				padding: 36px;
+
+				.reveal img {
+					max-width: 100%;
+					height: auto;
+					display: block;
+				}
+
+				.image-slide {
+					display: grid;
+					grid-template-columns: 1fr;
+					gap: 18px;
+					align-items: center;
+				}
+
+				.image-frame {
+					background: var(--card);
+					border-radius: 16px;
+					padding: 18px;
+					box-shadow: var(--shadow1), var(--shadow2);
+				}
+
+				.image-frame img {
+					border-radius: 12px;
+					width: 100%;
+					max-height: 62vh;
+					object-fit: contain;
+					box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+				}
+
+				.image-caption {
+					font-size: 0.86rem;
+					color: var(--muted);
+					margin-top: 10px;
+					line-height: 1.5;
+				}
 			}
 
 			/* Neumorphic card for slide content */
@@ -303,6 +338,63 @@
 							aggressively searches the developer's computer for SSH keys, environment variables
 							containing database credentials, and browser cookies, shipping them securely off to the
 							attacker.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card image-slide">
+							<div>
+								<h2>3. Technical Flow (Attack Timeline)</h2>
+								<p>
+									The timeline below shows how the package is installed, how the lifecycle script
+									runs, and where the malicious payload branches into credential theft and
+									propagation.
+								</p>
+							</div>
+							<div class="image-frame">
+								<img
+									src="img/word-image-349234-1.webp"
+									alt="Shai-Hulud attack timeline showing install, script execution and propagation flow"
+								/>
+								<div class="image-caption">
+									This image emphasizes the execution path: install, package extraction, lifecycle
+									hook execution, and downstream exfiltration.
+								</div>
+							</div>
+						</div>
+						<aside class="notes">
+							This slide gives a more operational view of the attack. The important part is that the
+							malicious code does not need a manual run; it activates during installation. That is what
+							makes npm lifecycle hooks so dangerous. The image also shows the difference between the
+							first Shai-Hulud behavior and the more aggressive 2.0 variant, which expands from simple
+							execution into credential theft and lateral movement.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card image-slide">
+							<div>
+								<h2>3. Technical Flow (Campaign Propagation)</h2>
+								<p>
+									The second image shows how the malware spreads across local developer systems, CI/CD
+									pipelines, cloud environments, and additional packages through the supply chain.
+								</p>
+							</div>
+							<div class="image-frame">
+								<img
+									src="img/1764066468-image-32.webp"
+									alt="Shai-Hulud 2.0 campaign propagation across developer machines, CI/CD pipelines and cloud environments"
+								/>
+								<div class="image-caption">
+									This image is useful for explaining the broader blast radius: local compromise can
+									reach GitHub Actions, cloud secrets, and additional npm packages.
+								</div>
+							</div>
+						</div>
+						<aside class="notes">
+							This is the bigger-picture view. The attack does not stop at one infected machine. Once
+							secrets are collected, the campaign can move into GitHub Actions, cloud accounts, and other
+							repositories. That makes the incident more than a single malware event. It becomes a supply
+							chain propagation problem, where one developer workstation can compromise many downstream
+							assets.
 						</aside>
 					</section>
 				</section>
