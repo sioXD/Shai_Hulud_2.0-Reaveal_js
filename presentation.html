@@ -254,12 +254,38 @@
 									theft, crypto-mining.
 								</li>
 								<li>
+									<strong>Scale:</strong> Mass publication made manual moderation impractical and
+									raised the chance of accidental installs.
+								</li>
+								<li>
 									<strong>Why it works:</strong> npm installs often run in trusted build contexts
 									where developers have direct access to source code, tokens, and cloud credentials.
 								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							Let's look at the specific context of the Shai-Hulud 2.0 case. Discovered by security
+							researchers tracking automated malware, this campaign involved the rapid publication of
+							thousands of packages. The attackers wrote scripts that programmatically generated packages
+							with names remarkably similar to highly popular legitimate packages (like 'react-dom',
+							'express', or 'lodash').
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card">
+							<h2>2. Context of the Case - Exploitation Path</h2>
+							<ul>
 								<li>
 									<strong>Operational pattern:</strong> The campaign combines typosquatting, package
 									automation, and postinstall-style execution to maximize reach.
+								</li>
+								<li>
+									<strong>Attack value:</strong> Build agents and developer laptops often have broad
+									access to GitHub, cloud consoles, package registries, and signing systems.
+								</li>
+								<li>
+									<strong>Outcome:</strong> A single compromised install can turn into source-code
+									theft, secret exposure, and a foothold inside the CI/CD chain.
 								</li>
 							</ul>
 							<p style="color: #475569">
@@ -268,21 +294,13 @@
 							</p>
 						</div>
 						<aside class="notes">
-							Let's look at the specific context of the Shai-Hulud 2.0 case. Discovered by security
-							researchers tracking automated malware, this campaign involved the rapid publication of
-							thousands of packages. The attackers wrote scripts that programmatically generated packages
-							with names remarkably similar to highly popular legitimate packages (like 'react-dom',
-							'express', or 'lodash'). Who constitutes the attacker profile here? We are looking at
-							sophisticated groups that operate like modern software businesses. They use automation to
-							maximize their net. Their motivation is primarily financial. By infecting developer
-							workstations or enterprise CI/CD pipelines, they harvest valuable credentials, AWS keys, and
-							proprietary source code. Once inside, they can deploy crypto-miners for passive income or
-							act as Initial Access Brokers, selling their footholds to ransomware gangs. The target isn't
-							the package itself, but the high-value developer who mistakenly downloads it. In practice,
-							this is dangerous because build agents and developer laptops often have broad access to
-							GitHub, cloud consoles, package registries, and signing systems. A single compromised
-							install can turn into source-code theft, secret exposure, and a foothold inside the CI/CD
-							chain.
+							Who constitutes the attacker profile here? We are looking at sophisticated groups that
+							operate like modern software businesses. They use automation to maximize their net. Their
+							motivation is primarily financial. By infecting developer workstations or enterprise CI/CD
+							pipelines, they harvest valuable credentials, AWS keys, and proprietary source code. Once
+							inside, they can deploy crypto-miners for passive income or act as Initial Access Brokers,
+							selling their footholds to ransomware gangs. The target isn't the package itself, but the
+							high-value developer who mistakenly downloads it.
 						</aside>
 					</section>
 				</section>
@@ -523,14 +541,32 @@
 									<strong>Technical Consequences:</strong>
 									<ul>
 										<li>Deep network penetration through valid stolen credentials.</li>
-										<li>Compromised CI/CD pipelines (Subsequent downstream infection).</li>
+										<li>Compromised CI/CD pipelines (subsequent downstream infection).</li>
 										<li>Potential supply chain propagation into production artifacts.</li>
 										<li>Account takeover through stolen npm, GitHub, or cloud tokens.</li>
+									</ul>
+								</li>
+								<li>
+									<strong>Technical Consequences - Supply Chain Spread:</strong>
+									<ul>
 										<li>
 											Malicious commits, runners, or build steps can contaminate future releases.
 										</li>
+										<li>Compromised build caches can reintroduce the payload into later jobs.</li>
 									</ul>
 								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							The impacts of campaigns like Shai-Hulud 2.0 are severe and multidimensional. Technically,
+							finding out a developer workstation has been compromised is a worst-case scenario.
+							Developers hold the keys to the kingdom.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card">
+							<h2>5. Impact & Damages - Business Effects</h2>
+							<ul>
 								<li>
 									<strong>Economic & Business Consequences:</strong>
 									<ul>
@@ -549,19 +585,8 @@
 							</ul>
 						</div>
 						<aside class="notes">
-							The impacts of campaigns like Shai-Hulud 2.0 are severe and multidimensional. Technically,
-							finding out a developer workstation has been compromised is a worst-case scenario.
-							Developers hold the keys to the kingdom. If valid AWS keys or production database
-							credentials are stolen verbatim, attackers don't need to break in—they simply log in
-							natively. Furthermore, if a corrupted package makes it into a CI/CD pipeline, the built
-							application itself might become a host for malware, shifting the supply chain attack down to
-							the company's customers. Economically, the damages are staggering. A single compromised
-							engineer requires wiping hardware, rotating all organizational keys, auditing codebases, and
-							hiring costly forensic teams. If threat actors successfully steal intellectual property or
-							drop ransomware using this initial access, the financial loss and reputational destruction
-							could potentially cripple an organization long-term. The practical impact is also
-							time-based: teams lose release velocity, trust in dependencies drops, and recovery work
-							often blocks normal product development for days or weeks.
+							The impacts of campaigns like Shai-Hulud 2.0 are severe and multidimensional. Economic costs
+							include incident response, forensics, downtime, and compliance work.
 						</aside>
 					</section>
 				</section>
@@ -578,15 +603,20 @@
 										<li>Automated threat hunting & prompt takedowns by the npm security team.</li>
 										<li>Immediate credential rotation for affected developers.</li>
 										<li>Full build artifact validation and re-signing.</li>
-										<li>
-											Rebuild compromised workstations and self-hosted runners from trusted
-											images.
-										</li>
-										<li>
-											Invalidate npm, GitHub, cloud, and SSO tokens tied to impacted identities.
-										</li>
 									</ul>
 								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							How do we fight back? Countermeasures operate on two levels: remediation and prevention. For
+							remediation, platforms like GitHub and npm have increased their automated malware detection,
+							tearing down malicious packages rapidly.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card">
+							<h2>6. Countermeasures & Lessons Learned - Prevention</h2>
+							<ul>
 								<li>
 									<strong>Prevention (Security Controls):</strong>
 									<ul>
@@ -607,20 +637,11 @@
 							</ul>
 						</div>
 						<aside class="notes">
-							How do we fight back? Countermeasures operate on two levels: remediation and prevention. For
-							remediation, platforms like GitHub and npm have increased their automated malware detection,
-							tearing down malicious packages rapidly. However, if a developer is infected, the only
-							effective remediation is wiping the machine and rotating every single credential they had
-							access to. In practice, response teams should treat endpoint reimaging, runner replacement,
-							and secret invalidation as mandatory, not optional. Prevention is more crucial. A critical
-							Best Practice is to disable automatic script execution by using the `--ignore-scripts` flag
-							or setting it globally in your npm config. This single software control nullifies the vast
-							majority of typosquatting payloads. Furthermore, strict adherence to lockfiles ensures
-							dependency reproducibility without fetching unexpected versions. The primary lesson learned
-							here is paradigm-shifting: "Zero Trust" must apply to open-source libraries. Developers
-							cannot blindly trust their package managers. Organizations must funnel external packages
-							through internal vetted registries, utilize SCA scanners, mandate code provenance, and limit
-							what build agents can reach on the network.
+							Prevention is more crucial. A critical Best Practice is to disable automatic script
+							execution by using the `--ignore-scripts` flag or setting it globally in your npm config.
+							This single software control nullifies the vast majority of typosquatting payloads.
+							Furthermore, strict adherence to lockfiles ensures dependency reproducibility without
+							fetching unexpected versions.
 						</aside>
 					</section>
 				</section>
