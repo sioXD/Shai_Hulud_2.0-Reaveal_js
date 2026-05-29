@@ -21,12 +21,13 @@
 		<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
 		<style>
 			:root {
-				--bg: #e9eef3;
-				--card: #f5f8fb;
-				--muted: #6b7280;
-				--accent: #2b6cb0;
-				--shadow1: 18px 18px 36px #c6ced8;
-				--shadow2: -12px -12px 24px #ffffff;
+				--bg: #f6f8fb;
+				--card: #ffffff;
+				--muted: #667085;
+				--accent: #1d4ed8;
+				--accent-strong: #0f172a;
+				--border: #d7dee8;
+				--shadow1: 0 10px 28px rgba(15, 23, 42, 0.08);
 			}
 
 			* {
@@ -34,61 +35,56 @@
 			}
 			body {
 				font-family:
-					system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-					"Segoe UI Symbol";
+					"Inter", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 				background: var(--bg);
 			}
 
 			/* Reveal container tweaks */
 			.reveal {
-				background: linear-gradient(180deg, var(--bg), #f3f6f9);
+				background: linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
 			}
 			.reveal .slides section {
 				padding: 36px;
-
-				.reveal img {
-					max-width: 100%;
-					height: auto;
-					display: block;
-				}
-
-				.image-slide {
-					display: grid;
-					grid-template-columns: 1fr;
-					gap: 18px;
-					align-items: center;
-				}
-
-				.image-frame {
-					background: var(--card);
-					border-radius: 16px;
-					padding: 18px;
-					box-shadow: var(--shadow1), var(--shadow2);
-				}
-
-				.image-frame img {
-					border-radius: 12px;
-					width: 100%;
-					max-height: 62vh;
-					object-fit: contain;
-					box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
-				}
-
-				.image-caption {
-					font-size: 0.86rem;
-					color: var(--muted);
-					margin-top: 10px;
-					line-height: 1.5;
-				}
+			}
+			.reveal img {
+				max-width: 100%;
+				height: auto;
+				display: block;
+			}
+			.image-slide {
+				display: grid;
+				grid-template-columns: 1fr;
+				gap: 18px;
+				align-items: center;
+			}
+			.image-frame {
+				background: var(--card);
+				border-radius: 12px;
+				padding: 18px;
+				border: 1px solid var(--border);
+				box-shadow: var(--shadow1);
+			}
+			.image-frame img {
+				border-radius: 10px;
+				width: 100%;
+				max-height: 62vh;
+				object-fit: contain;
+			}
+			.image-caption {
+				font-size: 0.86rem;
+				color: var(--muted);
+				margin-top: 10px;
+				line-height: 1.5;
 			}
 
 			/* Neumorphic card for slide content */
 			.slide-card {
 				background: var(--card);
-				border-radius: 14px;
-				padding: 22px 26px;
-				box-shadow: var(--shadow1), var(--shadow2);
-				color: #0f172a;
+				border-radius: 12px;
+				padding: 24px 28px;
+				box-shadow: var(--shadow1);
+				border: 1px solid var(--border);
+				color: var(--accent-strong);
 				max-width: 1100px;
 				margin: 0 auto;
 			}
@@ -98,18 +94,19 @@
 				font-size: 18px;
 			}
 			.reveal h2 {
-				font-size: 1.6rem;
-				margin: 0 0 0.4rem 0;
+				font-size: 1.55rem;
+				margin: 0 0 0.35rem 0;
 				color: var(--accent);
+				letter-spacing: -0.02em;
 			}
 			.reveal h3 {
 				font-size: 1.05rem;
-				color: #374151;
+				color: #475467;
 				margin: 0 0 0.6rem 0;
 			}
 			.reveal p {
 				font-size: 0.95rem;
-				color: #374151;
+				color: #475467;
 				margin: 0.4rem 0;
 			}
 
@@ -122,10 +119,9 @@
 				margin: 0.6rem 0;
 				padding: 12px;
 				border-radius: 10px;
-				background: linear-gradient(180deg, #ffffff, #eef4fb);
-				box-shadow:
-					6px 6px 12px rgba(198, 206, 216, 0.6),
-					-6px -6px 12px rgba(255, 255, 255, 0.8);
+				background: #ffffff;
+				border: 1px solid var(--border);
+				box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 			}
 
 			strong {
@@ -134,9 +130,10 @@
 
 			/* Mermaid card tweak */
 			.mermaid {
-				background: transparent;
+				background: #ffffff;
 				padding: 12px;
 				border-radius: 10px;
+				border: 1px solid var(--border);
 			}
 			.reveal .mermaid svg {
 				max-width: 100%;
@@ -154,7 +151,7 @@
 				color: var(--accent);
 			}
 			.reveal .progress span {
-				background: linear-gradient(90deg, #6bb0ff, #4f46e5);
+				background: linear-gradient(90deg, #2563eb, #1d4ed8);
 			}
 		</style>
 	</head>
@@ -395,6 +392,101 @@
 							repositories. That makes the incident more than a single malware event. It becomes a supply
 							chain propagation problem, where one developer workstation can compromise many downstream
 							assets.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card">
+							<h2>3.1 What Changed in 2.0</h2>
+							<ul>
+								<li>
+									<strong>More automation:</strong> the campaign scaled package creation and delivery
+									faster than earlier variants.
+								</li>
+								<li>
+									<strong>Earlier execution:</strong> malicious code executed in the
+									<strong>preinstall</strong> phase, before normal checks.
+								</li>
+								<li>
+									<strong>Broader target set:</strong> developer environments, CI/CD pipelines, and
+									cloud-connected workloads were all in scope.
+								</li>
+								<li>
+									<strong>Credential focus:</strong> stolen secrets were exfiltrated for later
+									escalation and lateral movement.
+								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							Microsoft describes Shai-Hulud 2.0 as a more automated and faster campaign than its
+							predecessor. The critical shift is that code runs during preinstall, which means it can
+							execute before many checks or sandboxing steps would normally catch it. That changes the
+							defender's timeline: the victim is already impacted by the time the installation looks
+							incomplete or suspicious. The broader target set also matters because the campaign is not
+							just about one laptop. It is about the full developer path into cloud and CI/CD
+							infrastructure.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card">
+							<h2>3.2 Observed Attack Chain</h2>
+							<ul>
+								<li>
+									<strong>Package compromise:</strong> attackers modified publicly available npm
+									packages.
+								</li>
+								<li>
+									<strong>Runtime setup:</strong> a preinstall script prepared the environment and
+									fetched the Bun runtime.
+								</li>
+								<li>
+									<strong>Credential theft:</strong> the bundled payload collected credentials and
+									configuration secrets.
+								</li>
+								<li>
+									<strong>Secondary persistence:</strong> attacker-controlled repositories and fake
+									commit activity were used to continue the operation.
+								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							The Microsoft research traces the chain through a preinstall script that points to
+							setup_bun.js, then into a larger malicious payload. That payload can download and execute
+							additional tooling, including GitHub Actions runner components and credential harvesting
+							tools such as TruffleHog. In some cases, the campaign also used fake personas and malicious
+							commits to make the activity look legitimate. For the audience, that is the key takeaway:
+							this is no longer a simple typo-squatting event. It is a multi-stage, self-propagating
+							supply chain intrusion.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card">
+							<h2>3.3 Detection and Response</h2>
+							<ul>
+								<li>
+									<strong>Immediate actions:</strong> rotate exposed secrets, isolate affected agents,
+									and review Key Vault / cloud permissions.
+								</li>
+								<li>
+									<strong>npm hardening:</strong> use trusted publishing, enforce 2FA, and prefer
+									WebAuthn over TOTP.
+								</li>
+								<li>
+									<strong>Platform controls:</strong> block obfuscated scripts, scan dependencies, and
+									use agentless code scanning / SBOM-based checks.
+								</li>
+								<li>
+									<strong>Threat hunting:</strong> look for node, bun, runner and trufflehog activity
+									in endpoint and cloud telemetry.
+								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							This slide turns the research into action. Microsoft recommends rotating credentials
+							quickly, isolating CI/CD agents or workspaces, and reducing unnecessary permissions in
+							identity and key management systems. On the publisher side, trusted publishing and strong
+							2FA reduce the chance of account abuse. On the detection side, defenders should hunt for the
+							specific process chain that starts in node and continues through bun, runner activity, or
+							TruffleHog-style secret collection.
 						</aside>
 					</section>
 				</section>
