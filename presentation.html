@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Shai-Hulud 2.0 npm Ecosystem Attack</title>
+		<!-- Google Fonts -->
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;600&display=swap"
+			rel="stylesheet"
+		/>
+		<!-- Reveal.js CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css"
+			id="theme"
+		/>
+		<!-- Mermaid -->
+		<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+		<style>
+			:root {
+				--bg: #e9eef3;
+				--card: #f5f8fb;
+				--muted: #6b7280;
+				--accent: #2b6cb0;
+				--shadow1: 18px 18px 36px #c6ced8;
+				--shadow2: -12px -12px 24px #ffffff;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+			body {
+				font-family:
+					system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+					"Segoe UI Symbol";
+				background: var(--bg);
+			}
+
+			/* Reveal container tweaks */
+			.reveal {
+				background: linear-gradient(180deg, var(--bg), #f3f6f9);
+			}
+			.reveal .slides section {
+				padding: 36px;
+			}
+
+			/* Neumorphic card for slide content */
+			.slide-card {
+				background: var(--card);
+				border-radius: 14px;
+				padding: 22px 26px;
+				box-shadow: var(--shadow1), var(--shadow2);
+				color: #0f172a;
+				max-width: 1100px;
+				margin: 0 auto;
+			}
+
+			/* Typography scale (smaller overall, more compact) */
+			.reveal {
+				font-size: 18px;
+			}
+			.reveal h2 {
+				font-size: 1.6rem;
+				margin: 0 0 0.4rem 0;
+				color: var(--accent);
+			}
+			.reveal h3 {
+				font-size: 1.05rem;
+				color: #374151;
+				margin: 0 0 0.6rem 0;
+			}
+			.reveal p {
+				font-size: 0.95rem;
+				color: #374151;
+				margin: 0.4rem 0;
+			}
+
+			ul {
+				padding-left: 0;
+				margin: 0;
+			}
+			ul li {
+				list-style: none;
+				margin: 0.6rem 0;
+				padding: 12px;
+				border-radius: 10px;
+				background: linear-gradient(180deg, #ffffff, #eef4fb);
+				box-shadow:
+					6px 6px 12px rgba(198, 206, 216, 0.6),
+					-6px -6px 12px rgba(255, 255, 255, 0.8);
+			}
+
+			strong {
+				color: #102a43;
+			}
+
+			/* Mermaid card tweak */
+			.mermaid {
+				background: transparent;
+				padding: 12px;
+				border-radius: 10px;
+			}
+			.reveal .mermaid svg {
+				max-width: 100%;
+				height: auto;
+			}
+
+			/* Notes styling (speaker view) */
+			aside.notes {
+				font-size: 0.9rem;
+				color: var(--muted);
+			}
+
+			/* Controls and progress subtle color */
+			.reveal .controls button {
+				color: var(--accent);
+			}
+			.reveal .progress span {
+				background: linear-gradient(90deg, #6bb0ff, #4f46e5);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<!-- Title Slide -->
+				<section>
+					<div class="slide-card">
+						<h2>The Shai-Hulud 2.0 Attack</h2>
+						<h3>An npm Ecosystem Typo-Squatting Campaign</h3>
+						<p>Presenting the Anatomy of a Supply Chain Threat</p>
+						<p style="color: #475569; font-size: 0.9rem; margin-top: 6px">
+							This talk focuses on the mechanics, impact and practical mitigations for development teams
+							and security engineers.
+						</p>
+					</div>
+					<aside class="notes">
+						Welcome, everyone. Today I am presenting an in-depth analysis of the "Shai-Hulud 2.0" npm
+						ecosystem attack. This presentation will cover the mechanics of modern supply chain attacks,
+						specifically focusing on how the globally trusted npm ecosystem was leveraged for a massive
+						automated malware campaign. We will explore the technical execution, the impact it had on
+						developers, and the robust countermeasures required to prevent such incidents in the future. The
+						goal is to understand not just what happened, but how the methodology of attackers has evolved,
+						making developers the new frontline of cybersecurity. Let's dive into the classification and
+						introduction of this attack. This presentation should take about 15 minutes, and we'll have time
+						for questions at the end.
+					</aside>
+				</section>
+
+				<!-- 1. Einordnung & Einführung -->
+				<section>
+					<section>
+						<div class="slide-card">
+							<h2>1. Classification & Introduction</h2>
+							<ul>
+								<li>
+									<strong>Attack Type:</strong> Software Supply Chain Attack (Typosquatting &
+									Automation)
+								</li>
+								<li>
+									<strong>CVE/CVSS:</strong> N/A (Ecosystem Abuse, not a specific protocol
+									vulnerability)
+								</li>
+								<li>
+									<strong>Relevance:</strong>
+									<ul>
+										<li>npm is the largest software registry globally.</li>
+										<li>The attack leveraged unprecedented automation.</li>
+										<li>Targets developers directly instead of production servers.</li>
+										<li>Demonstrates how trust and convenience can be weaponized.</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							To correctly classify Shai-Hulud 2.0, we must recognize it as a Software Supply Chain
+							Attack. It predominantly relies on typosquatting combined with heavily automated publishing
+							scripts. Unlike traditional exploits that target a specific unpatched software
+							vulnerability, this campaign doesn't have a single CVE or CVSS score. Instead, it exploits
+							systemic trust and human error within the Node Package Manager (npm) ecosystem. The
+							relevance of this attack is immense: npm is the largest software registry in the world,
+							serving millions of developers. Historically, threat actors went after misconfigured servers
+							or end-user applications. The Shai-Hulud campaign represents a shift: attackers are now
+							targeting the developers themselves, attempting to compromise their workstations to gain
+							high-privileged access to enterprise networks, source code, and deployment environments.
+							This level of automation—spanning thousands of malicious packages—makes it one of the most
+							prominent examples of modern ecosystem abuse.
+						</aside>
+					</section>
+				</section>
+
+				<!-- 2. Kontext des gewählten Falls -->
+				<section>
+					<section>
+						<div class="slide-card">
+							<h2>2. Context of the Case</h2>
+							<ul>
+								<li>
+									<strong>The Attack Scene:</strong> Thousands of maliciously generated npm packages
+									mimicking legitimate modules.
+								</li>
+								<li>
+									<strong>Attacker Profile:</strong> Sophisticated, highly automated
+									financially-motivated threat actors.
+								</li>
+								<li>
+									<strong>Target:</strong> Developer workstations, Continuous Integration / Continuous
+									Deployment (CI/CD) pipelines.
+								</li>
+								<li>
+									<strong>Motivation:</strong> Initial access broker (IAB) activities, credential
+									theft, crypto-mining.
+								</li>
+							</ul>
+							<p style="color: #475569">
+								Note: this campaign favored scale over stealth—mass publication increased chances of
+								accidental installs.
+							</p>
+						</div>
+						<aside class="notes">
+							Let's look at the specific context of the Shai-Hulud 2.0 case. Discovered by security
+							researchers tracking automated malware, this campaign involved the rapid publication of
+							thousands of packages. The attackers wrote scripts that programmatically generated packages
+							with names remarkably similar to highly popular legitimate packages (like 'react-dom',
+							'express', or 'lodash'). Who constitutes the attacker profile here? We are looking at
+							sophisticated groups that operate like modern software businesses. They use automation to
+							maximize their net. Their motivation is primarily financial. By infecting developer
+							workstations or enterprise CI/CD pipelines, they harvest valuable credentials, AWS keys, and
+							proprietary source code. Once inside, they can deploy crypto-miners for passive income or
+							act as Initial Access Brokers, selling their footholds to ransomware gangs. The target isn't
+							the package itself, but the high-value developer who mistakenly downloads it.
+						</aside>
+					</section>
+				</section>
+
+				<!-- 3. Technischer Ablauf des Angriffs -->
+				<section>
+					<section>
+						<div class="slide-card">
+							<h2>3. Technical Attack Flow</h2>
+							<h3>The Kill Chain</h3>
+							<ul>
+								<li><strong>Reconnaissance:</strong> Scraping npm for highest-download packages.</li>
+								<li>
+									<strong>Weaponization:</strong> Automated generation of typosquatted packages with
+									obfuscated payloads.
+								</li>
+								<li>
+									<strong>Delivery:</strong> Mass-publishing to the npm registry using automated
+									accounts.
+								</li>
+								<li>
+									<strong>Execution:</strong> Triggering via `preinstall` or `postinstall` package
+									lifecycle scripts.
+								</li>
+								<li>
+									<strong>Persistence:</strong> Establishing C2 and credential harvesting to maintain
+									access.
+								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							Understanding the technical flow requires mapping the attack to a traditional kill chain.
+							First, Reconnaissance: The attackers scrape the npm registry to identify the most downloaded
+							and depended-upon packages. They look for naming patterns that users frequently mistype.
+							Second, Weaponization: Unlike manual generation, Shai-Hulud 2.0 automated the creation of
+							malicious packages. The payload is heavily obfuscated to bypass basic static analysis.
+							Third, Delivery: The attackers use scripted accounts to flood the npm registry. They publish
+							hundreds of packages in hours, making manual moderation impossible. Finally, Execution. This
+							is the critical step. Because of how npm operates, installing a package can automatically
+							execute arbitrary code using lifecycle hooks like `preinstall` or `postinstall`. The
+							developer doesn't even have to import or run the package—merely typing 'npm install'
+							triggers the infection.
+						</aside>
+					</section>
+					<section>
+						<div class="slide-card">
+							<h2>3. Technical Flow (Diagram)</h2>
+							<div class="mermaid">
+								graph TD; A[Attacker scripts scrape popular npm packages] --> B[Generate 1000s of
+								typosquatted duplicates]; B --> C[Mass deploy malicious packages to npm]; C -->
+								D[Developer makes typo e.g. 'npm i rweact']; D --> E[npm downloads module to
+								node_modules]; E --> F[Malicious postinstall script executes]; F --> G[Payload contacts
+								C2 & Exfiltrates Keys/Tokens];
+							</div>
+							<p style="color: #475569; margin-top: 8px">
+								Diagram highlights automated attacker workflow and the human typo that triggers
+								execution.
+							</p>
+						</div>
+						<aside class="notes">
+							Here is a visual representation of the attack flow using a diagram. As you can see, the
+							process begins fully automated on the attacker's end. Once the packages live on npm, they
+							act as landmines. The human element comes into play roughly halfway through. A developer,
+							possibly fatigued or working quickly, makes a minor typo—for example, typing 'rweact'
+							instead of 'react'. npm faithfully downloads the package. As soon as the download finishes,
+							the final crucial step occurs. The package manager natively supports lifecycle scripts. The
+							malicious `postinstall` script runs automatically within the context of the user's terminal.
+							At the end of the chain, the payload reaches out to a Command and Control (C2) server. It
+							aggressively searches the developer's computer for SSH keys, environment variables
+							containing database credentials, and browser cookies, shipping them securely off to the
+							attacker.
+						</aside>
+					</section>
+				</section>
+
+				<!-- 4. Auswirkungen & Schäden -->
+				<section>
+					<section>
+						<div class="slide-card">
+							<h2>4. Impact & Damages</h2>
+							<ul>
+								<li>
+									<strong>Technical Consequences:</strong>
+									<ul>
+										<li>Deep network penetration through valid stolen credentials.</li>
+										<li>Compromised CI/CD pipelines (Subsequent downstream infection).</li>
+										<li>Potential supply chain propagation into production artifacts.</li>
+									</ul>
+								</li>
+								<li>
+									<strong>Economic & Business Consequences:</strong>
+									<ul>
+										<li>Cost of rigorous Incident Response and forensics.</li>
+										<li>Potential extortion or IP theft.</li>
+										<li>Reputational destruction if downstream customers are affected.</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							The impacts of campaigns like Shai-Hulud 2.0 are severe and multidimensional. Technically,
+							finding out a developer workstation has been compromised is a worst-case scenario.
+							Developers hold the keys to the kingdom. If valid AWS keys or production database
+							credentials are stolen verbatim, attackers don't need to break in—they simply log in
+							natively. Furthermore, if a corrupted package makes it into a CI/CD pipeline, the built
+							application itself might become a host for malware, shifting the supply chain attack down to
+							the company's customers. Economically, the damages are staggering. A single compromised
+							engineer requires wiping hardware, rotating all organizational keys, auditing codebases, and
+							hiring costly forensic teams. If threat actors successfully steal intellectual property or
+							drop ransomware using this initial access, the financial loss and reputational destruction
+							could potentially cripple an organization long-term.
+						</aside>
+					</section>
+				</section>
+
+				<!-- 5. Gegenmaßnahmen & Lessons Learned -->
+				<section>
+					<section>
+						<div class="slide-card">
+							<h2>5. Countermeasures & Lessons Learned</h2>
+							<ul>
+								<li>
+									<strong>Remediation:</strong>
+									<ul>
+										<li>Automated threat hunting & prompt takedowns by the npm security team.</li>
+										<li>Immediate credential rotation for affected developers.</li>
+										<li>Full build artifact validation and re-signing.</li>
+									</ul>
+								</li>
+								<li>
+									<strong>Prevention (Security Controls):</strong>
+									<ul>
+										<li>Running `npm config set ignore-scripts true` globally.</li>
+										<li>Utilizing lockfiles (`package-lock.json`) and exact versioning.</li>
+										<li>Implementing Software Composition Analysis (SCA) scanners.</li>
+										<li>Enforcing npm code provenance and strict 2FA for publishers.</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+						<aside class="notes">
+							How do we fight back? Countermeasures operate on two levels: remediation and prevention. For
+							remediation, platforms like GitHub and npm have increased their automated malware detection,
+							tearing down malicious packages rapidly. However, if a developer is infected, the only
+							effective remediation is wiping the machine and rotating every single credential they had
+							access to. Prevention is more crucial. A critical Best Practice is to disable automatic
+							script execution by using the `--ignore-scripts` flag or setting it globally in your npm
+							config. This single software control nullifies the vast majority of typosquatting payloads.
+							Furthermore, strict adherence to lockfiles ensures dependency reproducibility without
+							fetching unexpected versions. The primary lesson learned here is paradigm-shifting: "Zero
+							Trust" must apply to open-source libraries. Developers cannot blindly trust their package
+							managers. Organizations must funnel external packages through internal vetted registries,
+							utilize SCA scanners, and mandate code provenance.
+						</aside>
+					</section>
+				</section>
+
+				<!-- 6. Fazit -->
+				<section>
+					<section>
+						<div class="slide-card">
+							<h2>6. Conclusion</h2>
+							<ul>
+								<li>
+									<strong>Summary of Key Points:</strong>
+									<ul>
+										<li>Ecosystem attacks heavily leverage trust and robust automation.</li>
+										<li>
+											Developers are the primary targets, serving as gateways to enterprise
+											systems.
+										</li>
+										<li>
+											Execution relies entirely on package lifecycle scripts (e.g., postinstall).
+										</li>
+										<li>
+											Mitigation requires strict local controls and continuous ecosystem
+											monitoring.
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<br />
+							<h4>
+								<em
+									>"Supply chain security is no longer an optional overlay; it is fundamental to
+									modern development."</em
+								>
+							</h4>
+						</div>
+						<aside class="notes">
+							To conclude, the Shai-Hulud 2.0 campaign perfectly highlights the transition of threats from
+							targeting runtime applications to targeting the development lifecycle itself. Attackers
+							weaponize our trust in open-source ecosystems using heavy automation. They recognize that
+							developers are the softest underbelly of highly secured organizations. By exploiting native
+							package manager features like postinstall scripts, they achieve immediate code execution
+							upon a simple typing mistake. Mitigating these threats requires a combination of technical
+							controls, such as disabling scripts and using lockfiles, coupled with a major cultural shift
+							towards heightened security awareness during development. Supply chain security is no longer
+							an optional overlay; it must be a fundamental pillar of modern software engineering. Thank
+							you for your time and attention today. I will now open the floor to any questions or a
+							discussion on how we can implement these controls.
+						</aside>
+					</section>
+				</section>
+			</div>
+		</div>
+
+		<!-- Reveal.js Scripts -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+				plugins: [RevealNotes],
+				slideNumber: true,
+				showNotes: false,
+				transition: "convex",
+				transitionSpeed: "medium",
+				overview: true,
+				center: true,
+				margin: 0.08,
+			});
+
+			mermaid.initialize({
+				startOnLoad: true,
+				theme: "neutral",
+				securityLevel: "loose",
+				flowchart: { useMaxWidth: true },
+			});
+		</script>
+	</body>
+</html>
